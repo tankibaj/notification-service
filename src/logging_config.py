@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from pythonjsonlogger import jsonlogger  # type: ignore[import-untyped]
+from pythonjsonlogger.json import JsonFormatter
 
 from src.config import settings
 
@@ -10,7 +10,7 @@ def configure_logging() -> None:
     log_level = getattr(logging, settings.log_level.upper(), logging.INFO)
 
     handler = logging.StreamHandler(sys.stdout)
-    formatter = jsonlogger.JsonFormatter(
+    formatter = JsonFormatter(
         fmt="%(asctime)s %(name)s %(levelname)s %(message)s",
         datefmt="%Y-%m-%dT%H:%M:%S",
     )

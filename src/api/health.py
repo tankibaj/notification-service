@@ -27,6 +27,8 @@ async def ready(db: AsyncSession = Depends(get_db)) -> dict[str, str]:
         await db.execute(text("SELECT 1"))
     except Exception as exc:
         logger.error("Readiness check failed: DB unavailable", extra={"error": str(exc)})
-        raise HTTPException(status_code=503, detail={"status": "not_ready", "database": "error"})
+        raise HTTPException(
+            status_code=503, detail={"status": "not_ready", "database": "error"}
+        ) from exc
 
     return {"status": "ready", "database": "ok"}

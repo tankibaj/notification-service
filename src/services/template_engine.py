@@ -17,6 +17,6 @@ class TemplateEngine:
         template_name = f"{template_id}.html"
         try:
             template = self._env.get_template(template_name)
-        except TemplateNotFound:
-            raise ValueError(f"Template '{template_id}' not found")
+        except TemplateNotFound as exc:
+            raise ValueError(f"Template '{template_id}' not found") from exc
         return template.render(**variables)

@@ -1,8 +1,9 @@
 import uuid
 from typing import Any
 
+from fastapi import HTTPException
 from sqlalchemy import select, update
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import DBAPIError, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.notification import Notification
@@ -36,9 +37,24 @@ class NotificationRepository:
             idempotency_key=idempotency_key,
         )
         self._db.add(notification)
-        await self._db.commit()
-        await self._db.refresh(notification)
-        return notification
+        try:
+            await self._db.commit()
+            await self._db.refresh(notification)
+            return notification
+        except IntegrityError:
+            # Race condition: another request inserted the same idempotency key first.
+            await self._db.rollback()
+            if idempotency_key is not None:
+                existing = await self.find_by_idempotency_key(tenant_id, idempotency_key)
+                if existing:
+                    return existing
+            raise
+        except DBAPIError as exc:
+            await self._db.rollback()
+            raise HTTPException(
+                status_code=422,
+                detail={"code": "VALIDATION_ERROR", "message": "Request data is invalid"},
+            ) from exc
 
     async def get_by_id(
         self, notification_id: uuid.UUID, tenant_id: uuid.UUID

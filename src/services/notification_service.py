@@ -1,10 +1,9 @@
 import asyncio
 import logging
 import uuid
-from datetime import datetime, timezone
-from typing import Any
+from datetime import UTC, datetime
 
-from prometheus_client import Counter, Histogram  # type: ignore[import-untyped]
+from prometheus_client import Counter, Histogram
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.notification import Notification
@@ -145,7 +144,7 @@ class NotificationService:
                 await repo.update_status(
                     notification.id,
                     status="sent",
-                    delivered_at=datetime.now(tz=timezone.utc),
+                    delivered_at=datetime.now(tz=UTC),
                 )
                 notifications_sent_total.labels(**tenant_labels).inc()
                 logger.info(

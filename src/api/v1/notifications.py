@@ -41,6 +41,24 @@ async def send_notification(
     idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
     service: NotificationService = Depends(get_notification_service),
 ) -> NotificationReceipt:
+    # Normalize idempotency key: empty string is treated as no key
+    normalized_key: str | None = idempotency_key if idempotency_key else None
+
+    if normalized_key and len(normalized_key) > 64:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "code": "VALIDATION_ERROR",
+                "message": "Idempotency-Key must be 64 characters or fewer",
+            },
+        )
+
+    notification = await service.create_notification(
+        request=request,
+        tenant_id=tenant_id,
+        idempotency_key=normalized_key,
+    )
+
     notification = await service.create_notification(
         request=request,
         tenant_id=tenant_id,
