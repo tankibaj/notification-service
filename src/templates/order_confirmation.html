@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head><title>Order Confirmation</title></head>
+<body>
+  <h1>Order Confirmed!</h1>
+  {% if recipient_name %}<p>Hi {{ recipient_name }},</p>{% endif %}
+  <p>Your order <strong>{{ order_reference }}</strong> has been confirmed.</p>
+  <table>
+    <tr><th>Product</th><th>Variant</th><th>Qty</th><th>Price</th></tr>
+    {% for line in lines %}
+    <tr>
+      <td>{{ line.product_name }}</td>
+      <td>{{ line.variant_label }}</td>
+      <td>{{ line.quantity }}</td>
+      <td>{{ line.unit_price }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <p><strong>Total: {{ total }}</strong></p>
+</body>
+</html>
