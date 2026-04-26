@@ -1,6 +1,6 @@
 # Entity Schema: notification-service
 
-> Auto-generated from SQLAlchemy models on 2026-04-25 23:13 UTC. Do not edit manually.
+> Auto-generated from SQLAlchemy models on 2026-04-26 00:18 UTC. Do not edit manually.
 
 ---
 
@@ -22,8 +22,8 @@
 | `idempotency_key` | `VARCHAR(64)` | YES |  |  |
 
 **Indexes:**
-- `idx_notifications_status`: (`status`)
 - `idx_notifications_idempotency`: UNIQUE (`tenant_id`, `idempotency_key`)
+- `idx_notifications_status`: (`status`)
 - `idx_notifications_tenant`: (`tenant_id`)
 
 ---
